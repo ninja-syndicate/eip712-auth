@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <title> </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/tachyons/css/tachyons.min.css"
+  />
+  <body>
+    <div>
+      <h1>Successfully uploaded file</h1>
+      <p>
+        Share the following link with the owner of Ethereum address {{.wallet}}
+      </p>
+      <pre>http://localhost:8080/download/{{.wallet}}/{{.id}}</pre>
+    </div>
+  </body>
+</html>

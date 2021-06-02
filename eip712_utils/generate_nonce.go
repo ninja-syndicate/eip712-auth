@@ -4,10 +4,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
-	// "strconv"
-	// "time"
-	// "github.com/ethereum/go-ethereum/common/math"
-	// signer "github.com/ethereum/go-ethereum/signer/core"
 )
 
 func GenerateNonce() (string, error) {

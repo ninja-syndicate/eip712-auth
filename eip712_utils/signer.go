@@ -4,6 +4,17 @@ package eip712_utils
 // It signs a JSON payload as mandated by EIP712
 
 /*
+import (
+	"strconv"
+	"time"
+
+	"github.com/ethereum/go-ethereum/common/math"
+	signer "github.com/ethereum/go-ethereum/signer/core"
+)
+
+// This function is in development.
+// It signs a JSON payload as mandated by EIP712
+
 func EIP712Signer(walletAddress string) error {
 
 	// ...

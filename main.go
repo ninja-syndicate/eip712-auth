@@ -56,6 +56,7 @@ func RequestNonceHandler() func(w http.ResponseWriter, r *http.Request) (int, er
 
 func SignedMessageHandler() func(w http.ResponseWriter, r *http.Request) (int, error) {
 	fn := func(w http.ResponseWriter, r *http.Request) (int, error) {
+<<<<<<< HEAD
 		nonce := string(r.Header.Get("x-api-nonce"))
 		signature := string(r.Header.Get("x-api-signature"))
 		publicKey := string(r.Header.Get("x-api-publickey"))
@@ -85,6 +86,9 @@ func SignedMessageHandler() func(w http.ResponseWriter, r *http.Request) (int, e
 		}
 		json.NewEncoder(w).Encode(response)
 		return http.StatusAccepted, nil
+=======
+		return http.StatusNotImplemented, terror.ErrNotImplemented
+>>>>>>> feat: add function to create nonce and signature
 	}
 	return fn
 }

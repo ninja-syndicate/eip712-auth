@@ -2,10 +2,7 @@ package main
 
 import (
 	"bytes"
-	"crypto/rand"
-	"errors"
 
-	// "embed"
 	"encoding/hex"
 	"fmt"
 	"log"
@@ -18,10 +15,9 @@ import (
 	"github.com/ninja-software/terror/v2"
 
 	"github.com/go-chi/chi/v5"
-)
 
-////go:embed web
-//var web embed.FS
+	EIP712Sign "eip712-auth/eip712_utils"
+)
 
 func main() {
 	fs := http.FileServer(http.Dir("./static"))
@@ -50,23 +46,12 @@ func WithError(next func(w http.ResponseWriter, r *http.Request) (int, error)) f
 	return fn
 }
 
-func GenerateNonce() (string, error) {
-	// Generate a random nonce to include in our challenge
-	nonceBytes := make([]byte, 32)
-	n, err := rand.Read(nonceBytes)
-	if n != 32 {
-		return "", errors.New("nonce: n != 64 (bytes)")
-	} else if err != nil {
-		return "", err
-	}
-	nonce := hex.EncodeToString(nonceBytes)
-	return nonce, nil
-}
-
 func RequestNonceHandler() func(w http.ResponseWriter, r *http.Request) (int, error) {
 	fn := func(w http.ResponseWriter, r *http.Request) (int, error) {
-		nonce, err := GenerateNonce()
-		println(nonce, err)
+		nonce, err := EIP712Sign.GenerateNonce()
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
 		w.Write([]byte(nonce))
 		return http.StatusAccepted, err
 	}

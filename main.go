@@ -42,19 +42,6 @@ func WithError(next func(w http.ResponseWriter, r *http.Request) (int, error)) f
 	return fn
 }
 
-func GenerateNonce() (string, error) {
-	// Generate a random nonce to include in our challenge
-	nonceBytes := make([]byte, 32)
-	n, err := rand.Read(nonceBytes)
-	if n != 32 {
-		return "", errors.New("nonce: n != 64 (bytes)")
-	} else if err != nil {
-		return "", err
-	}
-	nonce := hex.EncodeToString(nonceBytes)
-	return nonce, nil
-}
-
 func RequestNonceHandler() func(w http.ResponseWriter, r *http.Request) (int, error) {
 	fn := func(w http.ResponseWriter, r *http.Request) (int, error) {
 		nonce, err := EIP712Sign.GenerateNonce()

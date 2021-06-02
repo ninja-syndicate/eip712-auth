@@ -2,8 +2,7 @@ package main
 
 import (
 	"bytes"
-	"embed"
-	_ "embed"
+
 	"encoding/hex"
 	"fmt"
 	"log"
@@ -16,17 +15,18 @@ import (
 	"github.com/ninja-software/terror/v2"
 
 	"github.com/go-chi/chi/v5"
+
+	EIP712Sign "eip712-auth/eip712_utils"
 )
 
-//go:embed web
-var web embed.FS
-
 func main() {
+	fs := http.FileServer(http.Dir("./static"))
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Handle("/static/*", http.StripPrefix("/static/", fs))
 	r.Post("/request_nonce", WithError(RequestNonceHandler()))
 	r.Post("/signed_message", WithError(SignedMessageHandler()))
 	fmt.Println("Starting server on :8080")
@@ -48,10 +48,16 @@ func WithError(next func(w http.ResponseWriter, r *http.Request) (int, error)) f
 
 func RequestNonceHandler() func(w http.ResponseWriter, r *http.Request) (int, error) {
 	fn := func(w http.ResponseWriter, r *http.Request) (int, error) {
-		return http.StatusNotImplemented, terror.ErrNotImplemented
+		nonce, err := EIP712Sign.GenerateNonce()
+		if err != nil {
+			return http.StatusInternalServerError, err
+		}
+		w.Write([]byte(nonce))
+		return http.StatusAccepted, err
 	}
 	return fn
 }
+
 func SignedMessageHandler() func(w http.ResponseWriter, r *http.Request) (int, error) {
 	fn := func(w http.ResponseWriter, r *http.Request) (int, error) {
 		return http.StatusNotImplemented, terror.ErrNotImplemented

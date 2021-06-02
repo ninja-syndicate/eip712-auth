@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title> </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/tachyons/css/tachyons.min.css"
+    />
+    <link rel="icon" type="image/png" href="./favicon.png"/>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"
+      integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+    <script src="index.js"></script>
+  </head>
+
+  <body>
+    <div>
+      <label for="address">Address</label><br />
+      <input id="address" name="address" value="No address" /><br />
+    </div>
+
+    <div>
+      <input type="button" value="getNonce" onclick="getNonce()"/>
+      <input id="nonce" name="nonce" value="No nonce" /><br />
+    </div>
+
+    <div>
+      <input type="button" value="sign" onclick="getSignature()"/>
+      <input id="sign" name="sign" value="No signature" /><br />
+    </div>
+    
+    <div>
+      <input type="button" value="verifySignature" onclick="verifySignature()"/>
+      <input id="verify" name=verify" value="No verification" /><br />
+    </div>
+    
+  </body>
+  <script>
+    window.onload = enableEthereum();
+  </script>
+</html>

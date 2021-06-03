@@ -38,8 +38,7 @@ const getSignature = () => {
   const nonce = document.getElementById("nonce").value;
   const publicAddress = document.getElementById("address").value;
   const companyName = "John";
-  const message = `🏆Hi! This is ${companyName}👋!\n\n 🎯Sign this message to prove you have access to this wallet and I’ll log you in. This won’t cost you any Ether.\n
-✅To stop others from using your wallet, here’s a unique message ID they can’t guess:\n ${nonce}`;
+  const message = `🏆Hi! This is ${companyName}👋!\n\n 🎯Sign this message to prove you have access to this wallet and I’ll log you in. This won’t cost you any Ether.\n\n ✅To stop others from using your wallet, here’s a unique message ID they can’t guess:\n ${nonce}`;
   web3.eth.personal.sign(
     web3.utils.utf8ToHex(message),
     publicAddress,
@@ -54,5 +53,27 @@ const getSignature = () => {
 };
 
 const verifySignature = async () => {
-  // TO BE IMPLEMENTED
+  const publicAddress = document.getElementById("address").value;
+  const signature = document.getElementById("sign").value;
+  const nonce = document.getElementById("nonce").value;
+  try{
+    const URL = "/verify_signed_message";
+    const config = {
+      headers: {
+        "x-api-nonce": nonce,
+        "x-api-signature": signature,
+        "x-api-publickey": publicAddress,
+      }
+    };
+    const response = await axios.post(URL, {}, config);
+    if(response.data.isSignatureValid == "false") {
+      alert("Your signature is incorrect :(")
+      document.getElementById("verify").value = "UNSUCCESSFUL";
+    } else {
+      alert("Amazing! Signature is verified successfully :)");
+      document.getElementById("verify").value = "SUCCESSFUL";
+    }
+  } catch (err) {
+    console.log(err);
+  }
 };

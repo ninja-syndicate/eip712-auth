@@ -1,15 +1,11 @@
 package main
 
 import (
-	"bytes"
+	"encoding/json"
 
-	"encoding/hex"
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/ninja-software/terror/v2"
@@ -28,7 +24,7 @@ func main() {
 	r.Use(middleware.Recoverer)
 	r.Handle("/static/*", http.StripPrefix("/static/", fs))
 	r.Post("/request_nonce", WithError(RequestNonceHandler()))
-	r.Post("/signed_message", WithError(SignedMessageHandler()))
+	r.Post("/verify_signed_message", WithError(SignedMessageHandler()))
 	fmt.Println("Starting server on :8080")
 	log.Fatalln(http.ListenAndServe(":8080", r))
 }
@@ -60,42 +56,35 @@ func RequestNonceHandler() func(w http.ResponseWriter, r *http.Request) (int, er
 
 func SignedMessageHandler() func(w http.ResponseWriter, r *http.Request) (int, error) {
 	fn := func(w http.ResponseWriter, r *http.Request) (int, error) {
-		return http.StatusNotImplemented, terror.ErrNotImplemented
+		nonce := string(r.Header.Get("x-api-nonce"))
+		signature := string(r.Header.Get("x-api-signature"))
+		publicKey := string(r.Header.Get("x-api-publickey"))
+
+		if nonce == "" || signature == "" || publicKey == "" {
+			return http.StatusBadRequest, fmt.Errorf("Nonce/signature/publicKey absent in request headers")
+		}
+
+		verificationResponse := EIP712Sign.VerifySignature(signature, nonce, publicKey)
+
+		response := make(map[string]string)
+		if verificationResponse {
+			response["isSignatureValid"] = "true"
+		} else {
+			response["isSignatureValid"] = "false"
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if verificationResponse == false {
+			response["jwtToken"] = ""
+		} else {
+			jwtToken, err := EIP712Sign.CreateToken(publicKey)
+			if err != nil {
+				log.Fatalln(err)
+			}
+			response["jwtToken"] = jwtToken
+		}
+		json.NewEncoder(w).Encode(response)
+		return http.StatusAccepted, nil
 	}
 	return fn
-}
-
-func Verify(userAddress common.Address, incomingSignature string, fileID string) (bool, error) {
-	fmt.Println("userAddress", userAddress)
-	fmt.Println("incomingSignature", incomingSignature)
-	fmt.Println("fileID", fileID)
-	signature, err := hex.DecodeString(incomingSignature[2:])
-	if err != nil {
-		return false, terror.Error(err)
-	}
-	if len(signature) != 65 {
-		return false, fmt.Errorf("invalid signature length: %d", len(signature))
-	}
-
-	if signature[64] != 27 && signature[64] != 28 {
-		return false, fmt.Errorf("invalid recovery id: %d", signature[64])
-	}
-	signature[64] -= 27
-
-	h := crypto.Keccak256Hash([]byte(fileID))
-	pubKeyRaw, err := crypto.Ecrecover(h.Bytes(), signature)
-	if err != nil {
-		return false, fmt.Errorf("invalid signature: %s", err.Error())
-	}
-
-	pubKey, err := crypto.UnmarshalPubkey(pubKeyRaw)
-	if err != nil {
-		return false, terror.Error(err)
-	}
-
-	recoveredAddr := crypto.PubkeyToAddress(*pubKey)
-	if !bytes.Equal(userAddress.Bytes(), recoveredAddr.Bytes()) {
-		return false, terror.Error(fmt.Errorf("addresses do not match: %s vs %s", userAddress, recoveredAddr))
-	}
-	return true, nil
 }

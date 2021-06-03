@@ -22,3 +22,4 @@ EIP-712: Ethereum typed structured data hashing and signing. Link: [EIP712](http
 - If `metamask` in not loaded, it will prompt the metamask extension as soon as the page loads
 - Click on `getNonce`. This populates the nonce sent by the server
 - Click on `sign`. This will prompt metamask popup to sign.
+- Click on `verifySignature`. This will prompt an alert depending on the API response.

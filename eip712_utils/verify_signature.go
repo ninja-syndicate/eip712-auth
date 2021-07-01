@@ -10,7 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-func VerifySignature(signature string, nonce string, publicKey string) bool {
+func VerifySignature(companyName string, signature string, nonce string, publicKey string) bool {
 	decodedSig, err := hexutil.Decode(signature)
 	if err != nil {
 		log.Fatal(err)
@@ -20,20 +20,21 @@ func VerifySignature(signature string, nonce string, publicKey string) bool {
 	}
 	decodedSig[64] -= 27
 
-	companyName := "John"
-	msg := []byte(fmt.Sprintf("🏆Hi! This is %s👋!\n\n 🎯Sign this message to prove you have access to this wallet and I’ll log you in. This won’t cost you any Ether.\n\n ✅To stop others from using your wallet, here’s a unique message ID they can’t guess:\n %s", companyName, nonce))
+	msg := []byte(fmt.Sprintf("🏆 Hi there 👋!\n\n 🎯Sign this message to prove you have access to this wallet and I’ll log you in. This won’t cost you any Ether.\n\n ✅To stop others from using your wallet, here’s a unique message ID they can’t guess:\n %s", nonce))
 
 	prefixedNonce := fmt.Sprintf("\x19Ethereum Signed Message:\n%d%s", len(msg), msg)
 
 	hash := crypto.Keccak256Hash([]byte(prefixedNonce))
 	recoveredPublicKey, err := crypto.Ecrecover(hash.Bytes(), decodedSig)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return false
 	}
 
 	secp256k1RecoveredPublicKey, err := crypto.UnmarshalPubkey(recoveredPublicKey)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return false
 	}
 
 	recoveredAddress := crypto.PubkeyToAddress(*secp256k1RecoveredPublicKey).Hex()

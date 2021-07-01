@@ -10,7 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
-func VerifySignature(companyName string, signature string, nonce string, publicKey string) bool {
+func VerifySignature(signature string, nonce string, publicKey string) bool {
 	decodedSig, err := hexutil.Decode(signature)
 	if err != nil {
 		log.Fatal(err)

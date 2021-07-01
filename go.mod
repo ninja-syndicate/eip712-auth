@@ -1,4 +1,4 @@
-module eip712-auth
+module github.com/nii236/eip712-auth
 
 go 1.16
 

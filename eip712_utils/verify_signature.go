@@ -2,7 +2,6 @@ package eip712_utils
 
 import (
 	"fmt"
-	"log"
 
 	"strings"
 

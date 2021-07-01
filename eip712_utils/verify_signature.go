@@ -13,7 +13,8 @@ import (
 func VerifySignature(signature string, nonce string, publicKey string) bool {
 	decodedSig, err := hexutil.Decode(signature)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		return false
 	}
 	if decodedSig[64] != 27 && decodedSig[64] != 28 {
 		return false
